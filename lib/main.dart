@@ -18,7 +18,10 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter App'),
+        title: Text('Flutter Expenses App'),
+        actions: [
+          IconButton(onPressed: null, icon: Icon(Icons.add))
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -33,6 +36,8 @@ class MyHomePage extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(onPressed: null, child: Icon(Icons.add),),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
     );
   }
 }
