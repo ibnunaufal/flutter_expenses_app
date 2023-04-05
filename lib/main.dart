@@ -54,6 +54,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _deleteTransaction(String id){
+    setState(() {
+      _userTransaction.removeWhere((element) {
+        return element.id == id;
+      });
+    });
+  }
+
   void _startAddNewTrx(BuildContext ctx) {
     showModalBottomSheet(
         context: ctx,
@@ -80,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Chart(_recentTrx),
-            TransactionList(_userTransaction)
+            TransactionList(_userTransaction, _deleteTransaction)
           ],
         ),
       ),
