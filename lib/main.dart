@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_expenses_app/widgets/new_transaction.dart';
@@ -81,64 +82,89 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    final appBar = AppBar(
-      title: Text('Flutter Expenses App'),
-      actions: [
-        IconButton(
-            onPressed: () => _startAddNewTrx(context), icon: Icon(Icons.add))
-      ],
-    );
-
-    final txListWidget = Container(
-                    height: (MediaQuery.of(context).size.height -
-                            appBar.preferredSize.height) *
-                        0.7,
-                    child:
-                        TransactionList(_userTransaction, _deleteTransaction));
-    return Scaffold(
-      appBar: appBar,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (isLandscape) Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: const Text('Personal Expenses'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Show Chart'),
-                Switch.adaptive(
-                  value: _showChart,
-                  onChanged: (value) {
-                    setState(() {
-                      _showChart = value;
-                    });
-                  },
+                CupertinoButton(
+                  onPressed: () => _startAddNewTrx(context),
+                  child: const Icon(CupertinoIcons.add),
                 )
               ],
             ),
-            if (!isLandscape) Container(
-                    height: (MediaQuery.of(context).size.height -
-                            appBar.preferredSize.height -
-                            MediaQuery.of(context).padding.top) *
-                        0.3,
-                    child: Chart(_recentTrx)),
+          )
+        : AppBar(
+            title: const Text('Flutter Expenses App'),
+            actions: [
+              IconButton(
+                  onPressed: () => _startAddNewTrx(context),
+                  icon: Icon(Icons.add))
+            ],
+          ) as PreferredSizeWidget;
+
+    final txListWidget = Container(
+        height:
+            (MediaQuery.of(context).size.height - appBar.preferredSize.height) *
+                0.7,
+        child: TransactionList(_userTransaction, _deleteTransaction));
+    final pageBody = SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Show Chart'),
+                  Switch.adaptive(
+                    value: _showChart,
+                    onChanged: (value) {
+                      setState(() {
+                        _showChart = value;
+                      });
+                    },
+                  )
+                ],
+              ),
+            if (!isLandscape)
+              Container(
+                  height: (MediaQuery.of(context).size.height -
+                          appBar.preferredSize.height -
+                          MediaQuery.of(context).padding.top) *
+                      0.3,
+                  child: Chart(_recentTrx)),
             if (!isLandscape) txListWidget,
-            if (isLandscape) _showChart
-                ? Container(
-                    height: (MediaQuery.of(context).size.height -
-                            appBar.preferredSize.height -
-                            MediaQuery.of(context).padding.top) *
-                        0.7,
-                    child: Chart(_recentTrx))
-                : txListWidget
+            if (isLandscape)
+              _showChart
+                  ? Container(
+                      height: (MediaQuery.of(context).size.height -
+                              appBar.preferredSize.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.7,
+                      child: Chart(_recentTrx))
+                  : txListWidget
           ],
         ),
       ),
-      floatingActionButton: Platform.isIOS ? Container() : FloatingActionButton(
-        onPressed: () => _startAddNewTrx(context),
-        child: Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
     );
+    return Platform.isIOS
+        ? CupertinoPageScaffold(child: pageBody)
+        : Scaffold(
+            appBar: appBar,
+            body: pageBody,
+            floatingActionButton: Platform.isIOS
+                ? Container()
+                : FloatingActionButton(
+                    onPressed: () => _startAddNewTrx(context),
+                    child: Icon(Icons.add),
+                  ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.miniEndFloat,
+          );
   }
 }
