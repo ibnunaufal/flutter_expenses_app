@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_expenses_app/widgets/new_transaction.dart';
@@ -105,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Show Chart'),
-                Switch(
+                Switch.adaptive(
                   value: _showChart,
                   onChanged: (value) {
                     setState(() {
@@ -133,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Platform.isIOS ? Container() : FloatingActionButton(
         onPressed: () => _startAddNewTrx(context),
         child: Icon(Icons.add),
       ),
