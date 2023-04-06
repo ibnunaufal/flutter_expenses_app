@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_expenses_app/widgets/new_transaction.dart';
 import 'package:flutter_expenses_app/widgets/transaction_list.dart';
 import './models/transaction.dart';
 import './widgets/transaction_list.dart';
 import './widgets/chart.dart';
 
-void main() => runApp(MyApp());
+void main() { 
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -32,12 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   List<Transactions> get _recentTrx {
-    return _userTransaction.where((element){
-      return element.date.isAfter(
-        DateTime.now().subtract(
-          Duration(days: 7),
-        )
-      );
+    return _userTransaction.where((element) {
+      return element.date.isAfter(DateTime.now().subtract(
+        Duration(days: 7),
+      ));
     }).toList();
   }
 
@@ -54,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _deleteTransaction(String id){
+  void _deleteTransaction(String id) {
     setState(() {
       _userTransaction.removeWhere((element) {
         return element.id == id;
@@ -75,20 +78,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final appBar = AppBar(
+      title: Text('Flutter Expenses App'),
+      actions: [
+        IconButton(
+            onPressed: () => _startAddNewTrx(context), icon: Icon(Icons.add))
+      ],
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Expenses App'),
-        actions: [
-          IconButton(
-              onPressed: () => _startAddNewTrx(context), icon: Icon(Icons.add))
-        ],
-      ),
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Chart(_recentTrx),
-            TransactionList(_userTransaction, _deleteTransaction)
+            Container(
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                child: Chart(_recentTrx)),
+            Container(
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height) *
+                    0.7,
+                child: TransactionList(_userTransaction, _deleteTransaction))
           ],
         ),
       ),
